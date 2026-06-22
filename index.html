@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Nepali Assistant</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;background:#0f172a;display:flex;justify-content:center;align-items:center;height:100vh}
+#app{display:flex;flex-direction:column;width:420px;height:620px;background:#111827;border-radius:16px;overflow:hidden;border:1px solid #1f2937}
+#header{padding:14px 18px;background:#1f2937;display:flex;align-items:center;gap:12px;border-bottom:1px solid #374151}
+#avatar{width:38px;height:38px;border-radius:50%;background:#312e81;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+#avatar i{font-size:18px;color:#a5b4fc}
+#header-name{font-size:14px;font-weight:600;color:#f1f5f9}
+#status-line{display:flex;align-items:center;gap:5px;margin-top:2px}
+#dot{width:7px;height:7px;border-radius:50%;background:#22c55e}
+#status-text{font-size:11px;color:#94a3b8}
+#messages{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;scroll-behavior:smooth}
+#messages::-webkit-scrollbar{width:4px}
+#messages::-webkit-scrollbar-thumb{background:#374151;border-radius:4px}
+.msg-row{display:flex;align-items:flex-end;gap:8px}
+.msg-row.user{flex-direction:row-reverse}
+.bubble-avatar{width:28px;height:28px;border-radius:50%;background:#312e81;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.bubble-avatar i{font-size:13px;color:#a5b4fc}
+.bubble{max-width:72%;padding:10px 14px;border-radius:16px;font-size:14px;line-height:1.55;word-break:break-word}
+.bubble.user{background:#4f46e5;color:#eef2ff;border-bottom-right-radius:4px}
+.bubble.bot{background:#1f2937;color:#e2e8f0;border:1px solid #374151;border-bottom-left-radius:4px}
+.msg-time{font-size:10px;color:#64748b;margin-top:4px}
+.msg-time.user-time{text-align:right}
+.msg-time.bot-time{margin-left:36px}
+#typing{display:none;align-items:flex-end;gap:8px;padding:0 16px 8px}
+.dots{display:flex;gap:4px;padding:10px 14px;background:#1f2937;border:1px solid #374151;border-radius:16px;border-bottom-left-radius:4px}
+.dots span{width:7px;height:7px;border-radius:50%;background:#64748b;animation:bounce 1.2s infinite}
+.dots span:nth-child(2){animation-delay:.2s}
+.dots span:nth-child(3){animation-delay:.4s}
+@keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-6px)}}
+#footer{padding:12px 14px;background:#1f2937;border-top:1px solid #374151;display:flex;align-items:center;gap:10px}
+#input{flex:1;padding:10px 14px;font-size:14px;border:1px solid #374151;border-radius:20px;outline:none;background:#0f172a;color:#f1f5f9;transition:border-color .2s}
+#input::placeholder{color:#64748b}
+#input:focus{border-color:#4f46e5}
+#send-btn{width:38px;height:38px;border-radius:50%;background:#4f46e5;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .2s}
+#send-btn:hover{background:#4338ca}
+#send-btn i{font-size:16px;color:#eef2ff}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="header">
+    <div id="avatar"><i class="ti ti-robot"></i></div>
+    <div>
+      <div id="header-name">Nepali Assistant</div>
+      <div id="status-line">
+        <div id="dot"></div>
+        <span id="status-text">Online</span>
+      </div>
+    </div>
+  </div>
+  <div id="messages">
+    <div class="msg-row">
+      <div class="bubble-avatar"><i class="ti ti-robot"></i></div>
+      <div>
+        <div class="bubble bot">नमस्ते! म तपाईंलाई कसरी सहयोग गर्न सक्छु? 🙏</div>
+        <div class="msg-time bot-time" id="welcome-time"></div>
+      </div>
+    </div>
+  </div>
+  <div id="typing">
+    <div class="bubble-avatar"><i class="ti ti-robot"></i></div>
+    <div class="dots"><span></span><span></span><span></span></div>
+  </div>
+  <div id="footer">
+    <input type="text" id="input" placeholder="Type in Nepali, Roman or English..." maxlength="500"/>
+    <button id="send-btn" aria-label="Send"><i class="ti ti-send"></i></button>
+  </div>
+</div>
+<script>
+const messagesEl=document.getElementById('messages');
+const inputEl=document.getElementById('input');
+const typingEl=document.getElementById('typing');
+const dot=document.getElementById('dot');
+const statusText=document.getElementById('status-text');
+document.getElementById('welcome-time').textContent=getTime();
+function getTime(){const n=new Date();return n.getHours().toString().padStart(2,'0')+':'+n.getMinutes().toString().padStart(2,'0')}
+function addMessage(text,type){
+  const row=document.createElement('div');
+  row.className='msg-row '+(type==='user'?'user':'');
+  if(type==='bot'){
+    const av=document.createElement('div');av.className='bubble-avatar';
+    av.innerHTML='<i class="ti ti-robot"></i>';row.appendChild(av);
+  }
+  const wrap=document.createElement('div');
+  const bubble=document.createElement('div');
+  bubble.className='bubble '+type;bubble.textContent=text;
+  const time=document.createElement('div');
+  time.className='msg-time '+(type==='user'?'user-time':'bot-time');
+  time.textContent=getTime();
+  wrap.appendChild(bubble);wrap.appendChild(time);
+  row.appendChild(wrap);
+  messagesEl.appendChild(row);
+  messagesEl.scrollTop=messagesEl.scrollHeight;
+}
+function setTyping(show){typingEl.style.display=show?'flex':'none';if(show)messagesEl.scrollTop=messagesEl.scrollHeight;}
+function setStatus(online){dot.style.background=online?'#22c55e':'#ef4444';statusText.textContent=online?'Online':'Offline';}
+async function sendMessage(){
+  const msg=inputEl.value.trim();if(!msg)return;
+  addMessage(msg,'user');inputEl.value='';
+  setTyping(true);
+  try{
+    const res=await fetch('http://localhost:8000/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:msg})});
+    const data=await res.json();
+    setTyping(false);addMessage(data.message,'bot');setStatus(true);
+  }catch(e){
+    setTyping(false);setStatus(false);
+    addMessage('Connection error. Please check if the server is running.','bot');
+  }
+}
+inputEl.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage();}});
+document.getElementById('send-btn').addEventListener('click',sendMessage);
+</script>
+</body>
+</html>

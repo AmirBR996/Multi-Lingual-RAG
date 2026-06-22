@@ -1,0 +1,17 @@
+langchain
+langchain-core 
+langchain-community
+langchain-groq
+langchain-huggingface
+sentence-transformers
+pypdf
+faiss-cpu
+fastapi 
+uvicorn
+tesseract-ocr 
+tesseract-ocr-nep 
+nepali-to-roman
+nepali-translator-package
+poppler-utils
+googletrans
+langdetect

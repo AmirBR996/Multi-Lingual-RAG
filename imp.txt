@@ -1,0 +1,2 @@
+# 2. extract text from pdf
+pdftoppm -jpeg -r 250 nrb-directive.pdf /tmp/pg && for f in /tmp/pg*.jpg; do tesseract "$f" stdout -l nep; done > output.txt
