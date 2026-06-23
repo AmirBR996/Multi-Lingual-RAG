@@ -7,8 +7,7 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import PromptTemplate
 from langchain_core.runnables import RunnablePassthrough
 from googletrans import Translator
-from translator import preprocess_query
-import ntr
+from translator import preprocess_query , output_query
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -66,15 +65,5 @@ chain = (
 def chat(user_message):
     query, original_lang = preprocess_query(user_message)
     result = chain.invoke(query)
-    answer = result
-
-    if original_lang == "en":
-        return translator.translate(
-            answer,
-            src="ne",
-            dest="en"
-        ).text
-    elif original_lang == "roman":
-        return ntr.nep_to_rom(answer)
-
-    return answer
+    response = output_query(result , original_lang)
+    return response

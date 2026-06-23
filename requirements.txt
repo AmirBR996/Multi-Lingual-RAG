@@ -10,8 +10,6 @@ fastapi
 uvicorn
 tesseract-ocr 
 tesseract-ocr-nep 
-nepali-to-roman
-nepali-translator-package
 poppler-utils
-googletrans
 langdetect
+deep_translator

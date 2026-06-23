@@ -11,7 +11,6 @@ roman_to_nepali = {
     "u": "ऊ",
     "uni": "उनी",
     "unihar": "उनीहरू",
-
     "k": "के",
     "ke": "के",
     "kina": "किन",
@@ -21,7 +20,6 @@ roman_to_nepali = {
     "kasto": "कस्तो",
     "ko": "को",
     "kun": "कुन",
-
     "cha": "छ",
     "chha": "छ",
     "chu": "छु",
@@ -34,7 +32,6 @@ roman_to_nepali = {
     "hunuhuncha": "हुनुहुन्छ",
     "bhayo": "भयो",
     "garyo": "गर्यो",
-
     "ghar": "घर",
     "school": "विद्यालय",
     "college": "कलेज",
@@ -45,14 +42,12 @@ roman_to_nepali = {
     "dudh": "दूध",
     "sathi": "साथी",
     "kitab": "किताब",
-
     "ramro": "राम्रो",
     "thik": "ठिक",
     "sano": "सानो",
     "thulo": "ठूलो",
     "naya": "नयाँ",
     "purano": "पुरानो",
-
     "ho": "हो",
     "hoina": "होइन",
     "ra": "र",
@@ -60,7 +55,6 @@ roman_to_nepali = {
     "tara": "तर",
     "yes": "हो",
     "no": "होइन",
-
     "namaste": "नमस्ते",
     "dhanyabad": "धन्यवाद",
     "dhanyabaad": "धन्यवाद",
@@ -68,13 +62,15 @@ roman_to_nepali = {
     "sanchai": "सन्चै",
     "bhetau": "भेटौँ",
 }
+
+nepali_to_roman = {v: k for k, v in roman_to_nepali.items()}
+
+
 def roman_to_nepali_text(text):
     words = text.lower().split()
+    return " ".join(roman_to_nepali.get(word, word) for word in words)
 
-    converted = []
-    for word in words:
-        converted.append(
-            roman_to_nepali.get(word, word)
-        )
 
-    return " ".join(converted)
+def nepali_to_text(text):
+    words = text.split()  
+    return " ".join(nepali_to_roman.get(word, word) for word in words)

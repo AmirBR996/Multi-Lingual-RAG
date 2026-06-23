@@ -1,29 +1,26 @@
-import re
-from googletrans import Translator
+from deep_translator import GoogleTranslator
 from langdetect import detect
-from roman import roman_to_nepali_text
-
-translator = Translator()
-
-def contains_nepali(text):
-    return bool(re.search(r'[\u0900-\u097F]', text))
+from roman import roman_to_nepali_text, nepali_to_text
 
 def preprocess_query(text):
-    if contains_nepali(text):
-        return text, "ne"
-
     try:
         lang = detect(text)
     except:
         lang = "unknown"
 
     if lang == "en":
-        nepali_query = translator.translate(
-            text,
-            src="en",
-            dest="ne"
-        ).text
+        nepali_query = GoogleTranslator(source="en", target="ne").translate(text)
         return nepali_query, "en"
+    elif lang in ("ne", "hi"):
+        return text, "ne"
+    else:
+        nepali_query = roman_to_nepali_text(text)
+        return nepali_query, "roman"
 
-    nepali_query = roman_to_nepali_text(text)
-    return nepali_query, "roman"
+def output_query(text, source):
+    if source == "en":
+        return GoogleTranslator(source="ne", target="en").translate(text)
+    elif source == "ne":
+        return text
+    else:
+        return nepali_to_text(text)
